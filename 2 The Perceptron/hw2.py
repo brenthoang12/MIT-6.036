@@ -41,7 +41,7 @@ def perceptron(data, labels, T):
                 change = True
         if not change:
             break
-    print(theta, theta_0)
+    return theta, theta_0
 
 # x = np.array([[-3,2],[-1,1],[-1,-1],[2,2],[1,-1]])
 # y = np.array([[1,-1,-1,-1,-1]])
@@ -63,8 +63,11 @@ def perceptron(data, labels, T):
 # perceptron(x,y, 1000)
     
 
-### 6 Mistakes and generalization
+# ### 6 Mistakes and generalization
 
-margin = [.0001, .0001, .01, .1, .2, .5]
-upperBoundMistake = [(1/i)** 2 for i in margin]
-print(upperBoundMistake)
+# margin = [.0001, .0001, .01, .1, .2, .5]
+# upperBoundMistake = [(1/i)** 2 for i in margin]
+# print(upperBoundMistake)
+    
+x = np.arange(24.0).reshape(6, 4)
+data_split = np.hsplit(x, 2)
