@@ -287,17 +287,13 @@ def test_one_hot(sub):
     else: print("Test Failed")
 
 
-'''
-few thoughts for the course:
-honestly, i had been struggling a lot. as a beginner and a casual learner, there were many exercises
-i dont know how to start. there are key words that are crucial, and some of the provided answers
-arent helpful either. i think a way to improve the accessibility would be clarify the step to answer 
-those questions. 
-'''
+
+######################################################################
+#   Example for part 3B) test_with_features()
+#test_with_features(super_simple_separable, 2, draw=True, pause=True)
 
 
-### 1 Scaling 
-    
+### 1 Scaling (they really need to work on their instruction. im struggling so much)
 
 data = np.array([[200, 800, 200, 800],
         [0.2,  0.2,  0.8,  0.8]])
@@ -337,5 +333,5 @@ def new_perceptron(data, label, max_error):
     print(m)
     return theta
 
-# theta = new_perceptron(data, label, max_error)
+theta = new_perceptron(data, label, max_error)
 
