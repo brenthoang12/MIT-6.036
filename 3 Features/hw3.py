@@ -295,30 +295,6 @@ def test_one_hot(sub):
 
 ### 1 Scaling (they really need to work on their instruction. im struggling so much)
 
-data = np.array([[200, 800, 200, 800],
-        [0.2,  0.2,  0.8,  0.8]])
-label = np.array([[-1, -1, 1, 1]])
-
-data = np.concatenate((data, np.array([[1,1,1,1]])), axis = 0)
-
-theta = np.array([[0,1,-.5]])
-
-def gamma(data, label, theta):
-    gamma = 999
-    data_points = data.shape[1]
-    for i in range(data_points):
-        margin = label[:, i:i+1] * theta.dot(data[:,i:i+1]) / np.linalg.norm(theta)
-        if margin < gamma:
-            gamma = margin
-    return gamma[0,0]
-
-margin = gamma(data, label, theta)
-
-R = math.sqrt(800**2 + .08**2 + 1**2)
-
-max_error = math.ceil((R/margin)**2)
-
-
 def new_perceptron(data, label, max_error):
     d, n = data.shape
     theta = np.zeros((d,1))
@@ -333,5 +309,40 @@ def new_perceptron(data, label, max_error):
     print(m)
     return theta
 
+def gamma(data, label, theta):
+    gamma = 999
+    data_points = data.shape[1]
+    for i in range(data_points):
+        margin = label[:, i:i+1] * theta.dot(data[:,i:i+1]) / np.linalg.norm(theta)
+        if margin < gamma:
+            gamma = margin
+    return gamma[0,0]
+
+data = np.array([[200, 800, 200, 800],
+        [0.2,  0.2,  0.8,  0.8]]) # * .001
+
+data[0:1,:] = data[0:1,:] * .001
+
+label = np.array([[-1, -1, 1, 1]])
+
+data = np.concatenate((data, np.array([[1,1,1,1]])), axis = 0)
+
+theta = np.array([[0,1,-0.5]])
+
+# theta = np.array([[0,1,-.0005]])
+
+margin = gamma(data, label, theta)
+
+print(margin)
+
+# R = math.sqrt(800**2 + .8**2 + 1**2)
+
+R = math.sqrt(.8**2 + .8**2 + 1**2)
+
+max_error = math.ceil((R/margin)**2)
+
 theta = new_perceptron(data, label, max_error)
+
+### 2 Encoding Discrete Values 
+
 
