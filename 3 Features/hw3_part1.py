@@ -1,6 +1,6 @@
 # Implement perceptron, average perceptron, and pegasos
-import math
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import pdb
@@ -8,7 +8,6 @@ import itertools
 import operator
 import functools
 
-print("Importing code_for_hw03")
 
 ######################################################################
 # Plotting
@@ -148,15 +147,15 @@ def rv(value_list):
 # th is dimension d by 1
 # th0 is a scalar
 # return a 1 by 1 matrix
-def y(x, th):
-   return np.dot(np.transpose(th), x)
+def y(x, th, th0):
+   return np.dot(np.transpose(th), x) + th0
 
 # x is dimension d by 1
 # th is dimension d by 1
 # th0 is dimension 1 by 1
 # return 1 by 1 matrix of +1, 0, -1
-def positive(x, th):
-   return np.sign(y(x, th))
+def positive(x, th, th0):
+   return np.sign(y(x, th, th0))
 
 # data is dimension d by n
 # labels is dimension 1 by n
@@ -253,20 +252,21 @@ def test_with_features(dataFun, order = 2, draw=True, pause=True):
 # data is dimension d by n
 # labels is dimension 1 by n
 # T is a positive integer number of steps to run
-def perceptron(data, labels, T, hook = None):
+def perceptron(data, labels, params = {}, hook = None):
+    T = params.get('T', 100)
     (d, n) = data.shape
     m = 0
-    theta = np.zeros((d, 1))
+    theta = np.zeros((d, 1)); theta_0 = np.zeros((1, 1))
     for t in range(T):
         for i in range(n):
             x = data[:,i:i+1]
             y = labels[:,i:i+1]
-            if y * positive(x, theta) <= 0.0:
+            if y * positive(x, theta, theta_0) <= 0.0:
                 m += 1
                 theta = theta + y * x
+                theta_0 = theta_0 + y
                 if hook: hook((theta, theta_0))
-    print(m)
-    return theta
+    return theta, theta_0
 
 
 
@@ -287,38 +287,22 @@ def test_one_hot(sub):
     else: print("Test Failed")
 
 
-
 ######################################################################
 #   Example for part 3B) test_with_features()
 #test_with_features(super_simple_separable, 2, draw=True, pause=True)
 
 
-### 1 Scaling (they really need to work on their instruction. im struggling so much)
 
-data = np.array([[200, 800, 200, 800],
-        [0.2,  0.2,  0.8,  0.8]])
-label = np.array([[-1, -1, 1, 1]])
-
-data = np.concatenate((data, np.array([[1,1,1,1]])), axis = 0)
-
-theta = np.array([[0,1,-.5]])
-
-def gamma(data, label, theta):
-    gamma = 999
-    data_points = data.shape[1]
-    for i in range(data_points):
-        margin = label[:, i:i+1] * theta.dot(data[:,i:i+1]) / np.linalg.norm(theta)
-        if margin < gamma:
-            gamma = margin
-    return gamma[0,0]
-
-margin = gamma(data, label, theta)
-
-R = math.sqrt(800**2 + .08**2 + 1**2)
-
-max_error = math.ceil((R/margin)**2)
+'''
+few thoughts for the course:
+honestly, i had been struggling a lot. as a beginner and a casual learner, there were many exercises
+i dont know how to start. there are key words that are crucial, and some of the provided answers
+arent helpful either. i think a way to improve the accessibility would be clarify the step to answer 
+those questions. 
+'''
 
 
+### 1 Scaling 
 def new_perceptron(data, label, max_error):
     d, n = data.shape
     theta = np.zeros((d,1))
@@ -333,5 +317,102 @@ def new_perceptron(data, label, max_error):
     print(m)
     return theta
 
-theta = new_perceptron(data, label, max_error)
+def gamma(data, label, theta):
+    gamma = 999
+    data_points = data.shape[1]
+    for i in range(data_points):
+        margin = label[:, i:i+1] * theta.dot(data[:,i:i+1]) / np.linalg.norm(theta)
+        if margin < gamma:
+            gamma = margin
+    return gamma[0,0]
+'''
+data = np.array([[200, 800, 200, 800],
+        [0.2,  0.2,  0.8,  0.8]]) # * .001
 
+data[0:1,:] = data[0:1,:] * .001
+
+label = np.array([[-1, -1, 1, 1]])
+
+data = np.concatenate((data, np.array([[1,1,1,1]])), axis = 0)
+
+theta = np.array([[0,1,-0.5]])
+
+theta = np.array([[0,1,-.0005]])
+
+margin = gamma(data, label, theta)
+
+# R = math.sqrt(800**2 + .8**2 + 1**2)
+
+R = math.sqrt(.8**2 + .8**2 + 1**2)
+
+upper_bound_error = math.ceil((R/margin)**2)
+
+# theta = new_perceptron(data, label, max_error)
+'''
+
+### 2 Encoding Discrete Values 
+
+def one_hot(x, k):
+    # Make an empty column vector
+    v = np.zeros((1, k))
+    # Set an entry to 1
+    v[0, x-1] = 1
+    return v.T
+
+'''
+data =   np.array([[2, 3,  4,  5]])
+labels = np.array([[1, 1, -1, -1]])
+
+# (theta, theta_0)  = perceptron(data, labels)
+
+data_1 = np.array([one_hot(x, 6) for x in data[0,]]).T #3D matrix
+
+data_1 = data_1[0]
+
+# print(data_1)
+
+theta, theta_0 = perceptron(data_1, labels, {'T': 50000})
+
+# print(theta, theta_0)
+samsung = np.array([[1,0,0,0,0,0]])
+nokia = np.array([[0,0,0,0,0,1]])
+samsung_pred = np.dot(theta.T, samsung.T) + theta_0 # is 0 so we classify as -1
+nokia = np.dot(theta.T, nokia.T) + theta_0 # is 0 so we classify as -1
+
+
+data =   np.array([[1, 2, 3, 4, 5, 6]])
+labels = np.array([[1, 1, -1, -1, 1, 1]])
+
+data_convert = np.array([one_hot(x, 6) for x in data[0,]]).T
+data_convert = data_convert[0]
+
+theta, theta_0 = perceptron(data_convert, labels, {'T': 50000})
+print(theta, theta_0)
+'''
+
+
+### 3 Polynomial Features 
+# no sh. what is this.. will have to return 
+'''
+make_polynomial_feature_fun return a function. what we are trying to do 
+is to see how many number of polynomial features depending on the degree in the list
+we are doing the degree based on the vector 2 by 1
+'''
+
+'''
+data = np.zeros((5,1))
+transformation = make_polynomial_feature_fun(2)
+# print(transformation(data))
+
+for i in [1, 10, 20, 30, 40, 50]:
+    print((make_polynomial_feature_fun(i)(np.zeros((2,1)))).shape) # 
+
+'''
+'''
+data = np.array([[1, 1, 2, 2],
+         [1, 2, 1, 2]])
+labels = np.array([[-1, 1, 1, -1]])
+
+print(super_simple_separable())
+test_with_features(super_simple_separable, order=3, draw=True, pause=False)
+'''
