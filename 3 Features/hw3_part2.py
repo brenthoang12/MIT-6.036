@@ -432,7 +432,7 @@ def load_mnist_single(path_data):
 '''
 im lost feels bad man
 why do i have to add lambda data and labels: in the xval_learning_alg function?
-'''
+
 
 data = load_auto_data("3 Features/auto-mpg.tsv")
 
@@ -465,7 +465,33 @@ print(acc)
 acc =xval_learning_alg(lambda data, labels: averaged_perceptron(data, labels, {"T": 50}), auto_data, auto_labels, k=10)
 print(acc)
 
-
+'''
 
 
 ### 5 Evaluating algorithmic and feature choices for review data
+
+review_data = load_review_data('3 Features/reviews.tsv')
+review_texts, review_label_list = zip(*((sample['text'], sample['sentiment']) for sample in review_data))
+
+dictionary = bag_of_words(review_texts)
+review_bow_data = extract_bow_feature_vectors(review_texts, dictionary)
+review_labels = rv(review_label_list)
+
+print('review_bow_data and labels shape', review_bow_data.shape, review_labels.shape)
+
+# acc = xval_learning_alg(lambda data, labels: averaged_perceptron(data, labels, {"T": 10}), review_bow_data, review_labels, k = 10)
+# print(acc)
+
+th, th_0 = averaged_perceptron(review_bow_data, review_labels, {"T": 10})
+
+rank_keyword_index = np.argsort(th[:,0]) # list
+
+low_ranker_index = rank_keyword_index[:10]
+high_ranker_index = rank_keyword_index[-10:]
+
+new_dict = reverse_dict(dictionary)
+
+positive_word = [new_dict[i] for i in high_ranker_index]
+print(positive_word)
+negative_word = [new_dict[i] for i in low_ranker_index]
+print(negative_word)
