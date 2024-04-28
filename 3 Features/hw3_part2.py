@@ -392,7 +392,7 @@ def load_mnist_data(labels):
     data = {}
 
     for label in labels:
-        images = load_mnist_single("mnist/mnist_train{}.png".format(label))
+        images = load_mnist_single("3 Features/mnist/mnist_train{}.png".format(label))
         y = np.array([[label] * len(images)])
         data[label] = {
             "images": images,
@@ -408,7 +408,9 @@ def load_mnist_single(path_data):
     """
 
     img = imread(path_data)  # 2156 x 2156 (m,n)
+    print(img)
     m, n = img.shape
+
 
     side_len = 28  # standard mnist
     n_img = int(m / 28)
@@ -469,6 +471,7 @@ print(acc)
 
 
 ### 5 Evaluating algorithmic and feature choices for review data
+'''
 
 review_data = load_review_data('3 Features/reviews.tsv')
 review_texts, review_label_list = zip(*((sample['text'], sample['sentiment']) for sample in review_data))
@@ -495,3 +498,9 @@ positive_word = [new_dict[i] for i in high_ranker_index]
 print(positive_word)
 negative_word = [new_dict[i] for i in low_ranker_index]
 print(negative_word)
+'''
+
+### 6 Evaluating features for MNIST data
+
+
+load_mnist_data(range(10))
