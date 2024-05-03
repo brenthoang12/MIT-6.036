@@ -432,11 +432,12 @@ def load_mnist_single(path_data):
 ### 4 Evaluating algorithmic and feature choices for AUTO data
 
 '''
+
 im lost feels bad man
 why do i have to add lambda data and labels: in the xval_learning_alg function?
+'''
 
-
-data = load_auto_data("3 Features/auto-mpg.tsv")
+data = load_auto_data("auto-mpg.tsv")
 
 feature_set_1 =  [('cylinders', raw),
             ('displacement', raw),
@@ -467,7 +468,7 @@ print(acc)
 acc =xval_learning_alg(lambda data, labels: averaged_perceptron(data, labels, {"T": 50}), auto_data, auto_labels, k=10)
 print(acc)
 
-'''
+
 
 
 ### 5 Evaluating algorithmic and feature choices for review data
@@ -503,4 +504,3 @@ print(negative_word)
 ### 6 Evaluating features for MNIST data
 
 
-load_mnist_data(range(10))
