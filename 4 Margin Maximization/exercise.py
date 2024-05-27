@@ -18,3 +18,5 @@ for i in range(data_point):
     margin_acc.append(margin)
 
 print(margin_acc)
+
+
